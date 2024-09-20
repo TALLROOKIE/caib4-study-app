@@ -92,7 +92,8 @@ def main():
         if st.button("Next Flashcard"):
             st.session_state['flashcard_index'] = random.randint(0, len(flashcards) - 1)
             st.session_state['show_definition'] = False
-            st.experimental_rerun()
+            # Instead of using experimental_rerun, we directly update the session state and rerun the function
+            main()  # Rerun the main function without needing experimental_rerun
 
     elif choice == "Quiz":
         st.header("Quiz")
@@ -119,7 +120,7 @@ def main():
             if st.button("Next Question"):
                 st.session_state['quiz_index'] = random.randint(0, len(quiz_questions) - 1)
                 st.session_state['answered'] = False
-                st.experimental_rerun()
+                main()  # Re-run the main function to reset the quiz
 
 if __name__ == '__main__':
     main()
