@@ -68,6 +68,51 @@ quiz_questions = [
     }
 ]
 
+def show_flashcards():
+    st.header("Flashcards")
+    if 'flashcard_index' not in st.session_state:
+        st.session_state['flashcard_index'] = random.randint(0, len(flashcards) - 1)
+        st.session_state['show_definition'] = False
+
+    term, definition = flashcards[st.session_state['flashcard_index']]
+    st.subheader(f"Term: {term}")
+
+    if st.button("Show Definition"):
+        st.session_state['show_definition'] = True
+
+    if st.session_state['show_definition']:
+        st.write(f"**Definition:** {definition}")
+
+    if st.button("Next Flashcard"):
+        st.session_state['flashcard_index'] = random.randint(0, len(flashcards) - 1)
+        st.session_state['show_definition'] = False
+
+def show_quiz():
+    st.header("Quiz")
+    if 'quiz_index' not in st.session_state:
+        st.session_state['quiz_index'] = random.randint(0, len(quiz_questions) - 1)
+        st.session_state['answered'] = False
+
+    quiz = quiz_questions[st.session_state['quiz_index']]
+    question = quiz['question']
+    options = quiz['options']
+    answer = quiz['answer']
+    st.subheader(f"Question: {question}")
+
+    selected_option = st.radio("Options", options)
+
+    if st.button("Submit Answer"):
+        if selected_option == answer:
+            st.success("Correct!")
+        else:
+            st.error(f"Incorrect. The correct answer was: {answer}")
+        st.session_state['answered'] = True
+
+    if st.session_state.get('answered', False):
+        if st.button("Next Question"):
+            st.session_state['quiz_index'] = random.randint(0, len(quiz_questions) - 1)
+            st.session_state['answered'] = False
+
 def main():
     st.title("CAIB 4 Interactive Study App")
 
@@ -75,51 +120,9 @@ def main():
     choice = st.sidebar.selectbox("Select Activity", menu)
 
     if choice == "Flashcards":
-        st.header("Flashcards")
-        if 'flashcard_index' not in st.session_state:
-            st.session_state['flashcard_index'] = random.randint(0, len(flashcards) - 1)
-            st.session_state['show_definition'] = False
-
-        term, definition = flashcards[st.session_state['flashcard_index']]
-        st.subheader(f"Term: {term}")
-
-        if st.button("Show Definition"):
-            st.session_state['show_definition'] = True
-
-        if st.session_state['show_definition']:
-            st.write(f"**Definition:** {definition}")
-
-        if st.button("Next Flashcard"):
-            st.session_state['flashcard_index'] = random.randint(0, len(flashcards) - 1)
-            st.session_state['show_definition'] = False
-            main()  # Rerun the main function directly to update the flashcard
-
+        show_flashcards()
     elif choice == "Quiz":
-        st.header("Quiz")
-        if 'quiz_index' not in st.session_state:
-            st.session_state['quiz_index'] = random.randint(0, len(quiz_questions) - 1)
-            st.session_state['answered'] = False
-
-        quiz = quiz_questions[st.session_state['quiz_index']]
-        question = quiz['question']
-        options = quiz['options']
-        answer = quiz['answer']
-        st.subheader(f"Question: {question}")
-
-        selected_option = st.radio("Options", options)
-
-        if st.button("Submit Answer"):
-            if selected_option == answer:
-                st.success("Correct!")
-            else:
-                st.error(f"Incorrect. The correct answer was: {answer}")
-            st.session_state['answered'] = True
-
-        if st.session_state.get('answered', False):
-            if st.button("Next Question"):
-                st.session_state['quiz_index'] = random.randint(0, len(quiz_questions) - 1)
-                st.session_state['answered'] = False
-                main()  # Re-run the main function to load the next quiz question
+        show_quiz()
 
 if __name__ == '__main__':
     main()
